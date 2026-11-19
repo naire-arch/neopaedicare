@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeoPaediCare by Waziri — Neonatal &amp; Pediatric Clinical Decision &amp; Nutrition System</title>
+<style>
+  :root {
+    --primary: #0f4c81;
+    --primary-light: #e6f0fa;
+    --secondary: #0d9488;
+    --secondary-light: #e6f7f5;
+    --danger: #dc2626;
+    --danger-light: #fee2e2;
+    --warning: #d97706;
+    --warning-light: #fef3c7;
+    --success: #16a34a;
+    --success-light: #dcfce7;
+    --bg: #f1f5f9;
+    --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #cbd5e1;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  header {
+    background: linear-gradient(135deg, #0b3960 0%, #0f4c81 60%, #0d9488 100%);
+    color: #fff;
+    padding: 1rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .brand h1 { font-size: 1.45rem; font-weight: 800; letter-spacing: -0.02em; }
+  .brand span.badge {
+    background: rgba(255,255,255,0.2);
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-left: 0.4rem;
+    vertical-align: middle;
+  }
+  .brand p { font-size: 0.85rem; opacity: 0.9; margin-top: 0.15rem; }
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.82rem;
+  }
+  .pill {
+    background: rgba(255,255,255,0.16);
+    padding: 0.35rem 0.7rem;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .dot-online { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; display: inline-block; }
+  nav.tabs {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    padding: 0 1rem;
+    display: flex;
+    overflow-x: auto;
+    gap: 0.25rem;
+  }
+  nav.tabs button {
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 0.85rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+  }
+  nav.tabs button:hover { color: var(--primary); background: #f8fafc; }
+  nav.tabs button.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background: var(--primary-light);
+  }
+  main { max-width: 1280px; margin: 1.25rem auto; padding: 0 1rem 3rem; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.25rem; }
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.25rem; margin-bottom: 1.25rem; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.15rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .card h2 { font-size: 1.08rem; color: var(--primary); margin-bottom: 0.75rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.45rem; }
+  .card h3 { font-size: 0.96rem; margin-bottom: 0.5rem; color: #0f172a; }
+  .kpi-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); font-weight: 700; }
+  .kpi-val { font-size: 1.85rem; font-weight: 800; margin: 0.25rem 0; }
+  .kpi-sub { font-size: 0.8rem; color: var(--muted); }
+  .kpi-danger .kpi-val { color: var(--danger); }
+  .kpi-warn .kpi-val { color: var(--warning); }
+  .kpi-ok .kpi-val { color: var(--secondary); }
+  .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin-bottom: 0.75rem; }
+  label { display: block; font-size: 0.8rem; font-weight: 600; color: #334155; margin-bottom: 0.25rem; }
+  input, select, textarea {
+    width: 100%;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: #fff;
+    color: var(--text);
+  }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--primary); border-color: var(--primary); }
+  .btn {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 0.55rem 1rem;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .btn:hover { background: #0b3960; }
+  .btn-secondary { background: var(--secondary); }
+  .btn-secondary:hover { background: #0f766e; }
+  .btn-danger { background: var(--danger); }
+  .btn-sm { padding: 0.3rem 0.6rem; font-size: 0.78rem; }
+  .alert-box {
+    padding: 0.85rem 1rem;
+    border-radius: 8px;
+    margin-top: 0.75rem;
+    font-size: 0.88rem;
+    border-left: 4px solid;
+  }
+  .alert-red { background: var(--danger-light); border-color: var(--danger); color: #7f1d1d; }
+  .alert-amber { background: var(--warning-light); border-color: var(--warning); color: #78350f; }
+  .alert-green { background: var(--success-light); border-color: var(--success); color: #14532d; }
+  .alert-blue { background: var(--primary-light); border-color: var(--primary); color: #1e3a8a; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.86rem; margin-top: 0.5rem; }
+  th, td { text-align: left; padding: 0.6rem 0.65rem; border-bottom: 1px solid #e2e8f0; }
+  th { background: #f8fafc; font-weight: 700; color: #334155; }
+  .tag {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .tag-red { background: var(--danger-light); color: var(--danger); }
+  .tag-amber { background: var(--warning-light); color: var(--warning); }
+  .tag-green { background: var(--success-light); color: var(--success); }
+  .tag-blue { background: var(--primary-light); color: var(--primary); }
+  .check-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.88rem;
+  }
+  .check-item input[type="checkbox"] { width: auto; margin-right: 0.6rem; transform: scale(1.15); }
+  .sms-preview {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 8px;
+    padding: 0.85rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.83rem;
+    white-space: pre-wrap;
+    margin-top: 0.65rem;
+  }
+  footer {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1.25rem 1rem 2rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <h1>NeoPaediCare <span class="badge">by Waziri</span></h1>
+    <p>Integrated Newborn Unit (NBU), Pediatric Clinical Triage &amp; Precision Nutrition Decision System</p>
+  </div>
+  <div class="status-bar">
+    <div class="pill"><span class="dot-online"></span> Offline-First Local Storage Ready</div>
+    <div class="pill" id="clockDisplay">Ward Shift Active</div>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="active" onclick="switchTab('ward', this)">1. Ward Triage &amp; NEOWS/PEWS</button>
+  <button onclick="switchTab('neonatal_nutr', this)">2. Neonatal Feeds &amp; NEC Guard</button>
+  <button onclick="switchTab('peds_imam', this)">3. Pediatric Malnutrition (IMAM)</button>
+  <button onclick="switchTab('meds_jaundice', this)">4. Dosing &amp; Phototherapy</button>
+  <button onclick="switchTab('kitchen_lactation', this)">5. Ward Kitchen &amp; Lactation</button>
+  <button onclick="switchTab('ipc_stock', this)">6. IPC, Oxygen &amp; Equipment</button>
+  <button onclick="switchTab('referrals_sms', this)">7. Referrals &amp; Parent SMS</button>
+</nav>
+
+<main>
+
+  <!-- TAB 1: WARD TRIAGE & EARLY WARNING -->
+  <section id="ward" class="panel active">
+    <div class="grid-4">
+      <div class="card kpi-danger">
+        <div class="kpi-title">Critical / High Risk (Red)</div>
+        <div class="kpi-val" id="kpiCritical">2</div>
+        <div class="kpi-sub">Immediate clinician review required</div>
+      </div>
+      <div class="card kpi-warn">
+        <div class="kpi-title">Moderate Risk / Watch (Amber)</div>
+        <div class="kpi-val" id="kpiWatch">2</div>
+        <div class="kpi-sub">30-min vital recheck &amp; feed review</div>
+      </div>
+      <div class="card kpi-ok">
+        <div class="kpi-title">Active Ward Occupancy</div>
+        <div class="kpi-val" id="kpiTotal">5 / 24</div>
+        <div class="kpi-sub">19 cots/incubators available</div>
+      </div>
+      <div class="card">
+        <div class="kpi-title">Nurse-to-Patient Load</div>
+        <div class="kpi-val" id="kpiRatio">1 : 5</div>
+        <div class="kpi-sub">Prioritized by automated risk score</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>Rapid Bedside Early Warning Assessment (NEOWS / PEWS)</h2>
+        <div class="form-row">
+          <div>
+            <label>Patient Name / Bed ID</label>
+            <input type="text" id="tName" placeholder="e.g., Baby Amina (Inc-04)">
+          </div>
+          <div>
+            <label>Unit / Age Group</label>
+            <select id="tGroup">
+              <option value="nbu">Newborn Unit (0–28 days)</option>
+              <option value="infant">Pediatric Infant (1–12 mos)</option>
+              <option value="child">Pediatric Child (1–12 yrs)</option>
+            </select>
+          </div>
+          <div>
+            <label>Current Weight (kg)</label>
+            <input type="number" step="0.01" id="tWeight" value="1.65">
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label>Temp (°C)</label>
+            <input type="number" step="0.1" id="tTemp" value="36.2">
+          </div>
+          <div>
+            <label>Resp Rate (bpm)</label>
+            <input type="number" id="tRR" value="64">
+          </div>
+          <div>
+            <label>Heart Rate (bpm)</label>
+            <input type="number" id="tHR" value="168">
+          </div>
+          <div>
+            <label>SpO2 (%)</label>
+            <input type="number" id="tSpo2" value="89">
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label>Primary Clinical Concern</label>
+            <select id="tDx">
+              <option value="Prematurity / RDS">Prematurity / RDS</option>
+              <option value="Suspected Neonatal Sepsis">Suspected Neonatal Sepsis</option>
+              <option value="Birth Asphyxia">Birth Asphyxia</option>
+              <option value="Severe Pneumonia">Severe Pneumonia</option>
+              <option value="Acute Diarrhea / Dehydration">Acute Diarrhea / Dehydration</option>
+              <option value="Severe Malaria">Severe Malaria</option>
+              <option value="Severe Acute Malnutrition (SAM)">Severe Acute Malnutrition (SAM)</option>
+            </select>
+          </div>
+          <div>
+            <label>Danger Signs</label>
+            <select id="tDanger">
+              <option value="none">None / Alert</option>
+              <option value="lethargy">Lethargy / Poor Suck</option>
+              <option value="grunting">Chest Indrawing / Grunting</option>
+              <option value="convulsions">Convulsions / Apnea</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn" onclick="addPatientTriage()">Calculate Score &amp; Admit to Live Board</button>
+        <div id="triageOutput"></div>
+      </div>
+
+      <div class="card">
+        <h2>Prioritized Shift Handover Board (Auto-Sorted by Risk)</h2>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Bed / Patient</th>
+                <th>Wt</th>
+                <th>Vitals</th>
+                <th>Risk</th>
+                <th>Action / Feeding Order</th>
+              </tr>
+            </thead>
+            <tbody id="wardTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 2: NEONATAL FEEDS & NEC GUARD -->
+  <section id="neonatal_nutr" class="panel">
+    <div class="grid-2">
+      <div class="card">
+        <h2>Neonatal Daily Fluid &amp; Enteral Feed Escalation</h2>
+        <div class="form-row">
+          <div>
+            <label>Baby Weight (kg)</label>
+            <input type="number" step="0.01" id="nWeight" value="1.45">
+          </div>
+          <div>
+            <label>Day of Life (DOL)</label>
+            <input type="number" min="1" max="28" id="nDol" value="4">
+          </div>
+          <div>
+            <label>Gestational Category</label>
+            <select id="nGest">
+              <option value="preterm">Preterm (&lt;37 wks / LBW)</option>
+              <option value="term">Term (&ge;37 wks)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label>Current IV Fluids (mL/hr)</label>
+            <input type="number" step="0.1" id="nIvRate" value="2.0">
+          </div>
+          <div>
+            <label>Feed Frequency</label>
+            <select id="nFreq">
+              <option value="12">Every 2 Hours (12 feeds/day)</option>
+              <option value="8" selected>Every 3 Hours (8 feeds/day)</option>
+            </select>
+          </div>
+          <div>
+            <label>Milk Type</label>
+            <select id="nMilk">
+              <option value="EBM">Expressed Breast Milk (EBM)</option>
+              <option value="Fortified EBM">Fortified EBM (HMF)</option>
+              <option value="Preterm Formula">Preterm Formula</option>
+              <option value="Donor Human Milk">Pasteurized Donor Milk</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-secondary" onclick="calcNeonatalFeeds()">Calculate Feed &amp; Fortification Plan</button>
+        <div id="neonatalFeedOutput"></div>
+      </div>
+
+      <div class="card">
+        <h2>Feed Intolerance &amp; Necrotizing Enterocolitis (NEC) Safety Screen</h2>
+        <p style="font-size:0.84rem; color:var(--muted); margin-bottom:0.75rem;">Screen before every NG-tube or cup feed to prevent bowel perforation.</p>
+        <div class="check-item">
+          <label style="margin:0; font-weight:500;"><input type="checkbox" class="nec-chk" value="2"> Bilious (green) or blood-stained gastric aspirate</label>
+          <span class="tag tag-red">High Risk</span>
+        </div>
+        <div class="check-item">
+          <label style="margin:0; font-weight:500;"><input type="checkbox" class="nec-chk" value="2"> Visible abdominal distension or shiny/discolored skin</label>
+          <span class="tag tag-red">High Risk</span>
+        </div>
+        <div class="check-item">
+          <label style="margin:0; font-weight:500;"><input type="checkbox" class="nec-chk" value="2"> Bloody stools (hematochezia)</label>
+          <span class="tag tag-red">High Risk</span>
+        </div>
+        <div class="check-item">
+          <label style="margin:0; font-weight:500;"><input type="checkbox" class="nec-chk" value="1"> Gastric residual &gt; 50% of previous feed volume</label>
+          <span class="tag tag-amber">Moderate</span>
+        </div>
+        <div class="check-item">
+          <label style="margin:0; font-weight:500;"><input type="checkbox" class="nec-chk" value="1"> New apnea, bradycardia, or temperature instability</label>
+          <span class="tag tag-amber">Moderate</span>
+        </div>
+        <div style="margin-top:0.85rem;">
+          <button class="btn btn-danger" onclick="evalNecScreen()">Evaluate Feeding Safety</button>
+        </div>
+        <div id="necOutput"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 3: PEDIATRIC MALNUTRITION (IMAM) -->
+  <section id="peds_imam" class="panel">
+    <div class="grid-2">
+      <div class="card">
+        <h2>Pediatric Anthropometry &amp; IMAM Triage (6–59 Months)</h2>
+        <div class="form-row">
+          <div>
+            <label>Child Weight (kg)</label>
+            <input type="number" step="0.1" id="mWeight" value="6.4">
+          </div>
+          <div>
+            <label>Length / Height (cm)</label>
+            <input type="number" step="0.5" id="mHeight" value="72.0">
+          </div>
+          <div>
+            <label>MUAC (cm)</label>
+            <input type="number" step="0.1" id="mMuac" value="11.1">
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label>Bilateral Pitting Edema</label>
+            <select id="mEdema">
+              <option value="0">None (0)</option>
+              <option value="1">Grade + (Feet only)</option>
+              <option value="2">Grade ++ (Feet &amp; lower legs)</option>
+              <option value="3">Grade +++ (Generalized / Kwashiorkor)</option>
+            </select>
+          </div>
+          <div>
+            <label>Appetite Test &amp; Complications</label>
+            <select id="mComp">
+              <option value="failed">Failed Appetite Test / Medical Complication (Inpatient)</option>
+              <option value="passed">Good Appetite &amp; Alert (Outpatient OTP)</option>
+            </select>
+          </div>
+          <div>
+            <label>Treatment Phase</label>
+            <select id="mPhase">
+              <option value="f75">Stabilization Phase (F-75)</option>
+              <option value="f100">Transition / Rehabilitation (F-100)</option>
+              <option value="rutf">Outpatient RUTF Discharge</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn" onclick="calcImamProtocol()">Classify Malnutrition &amp; Calculate Therapeutic Feed</button>
+        <div id="imamOutput"></div>
+      </div>
+
+      <div class="card">
+        <h2>Refeeding Syndrome Guardrails &amp; Micronutrient Protocol</h2>
+        <div class="alert-box alert-amber" style="margin-top:0;">
+          <strong>Critical Safety Lock (First 48–72 Hours):</strong> Never give F-100, high-protein feeds, or routine iron during the F-75 stabilization phase. Aggressive feeding triggers fatal hypophosphatemia, hypokalemia, and heart failure.
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Protocol Element</th>
+              <th>Stabilization (F-75)</th>
+              <th>Rehabilitation (F-100 / RUTF)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Target Energy</strong></td>
+              <td>100 kcal/kg/day (130 mL/kg/day; 100 mL if +++ edema)</td>
+              <td>150–220 kcal/kg/day</td>
+            </tr>
+            <tr>
+              <td><strong>Feed Schedule</strong></td>
+              <td>2-hourly (12 feeds) initially, then 3-hourly (8 feeds)</td>
+              <td>3-hourly or 4-hourly + family meals</td>
+            </tr>
+            <tr>
+              <td><strong>Iron Supplementation</strong></td>
+              <td><strong>CONTRAINDICATED</strong> (promotes bacterial growth/free radicals)</td>
+              <td>Start 3 mg/kg/day once appetite returns &amp; infection controlled</td>
+            </tr>
+            <tr>
+              <td><strong>Electrolytes &amp; Vitamins</strong></td>
+              <td>ReSoMal for diarrhea (never standard ORS), Folic acid 5mg Day 1, Vitamin A</td>
+              <td>Continue multivitamins, zinc (in CMV/F-100), deworming</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 4: DOSING & PHOTOTHERAPY -->
+  <section id="meds_jaundice" class="panel">
+    <div class="grid-2">
+      <div class="card">
+        <h2>Weight-Based First-Line Antibiotic &amp; Fluid Calculator</h2>
+        <div class="form-row">
+          <div>
+            <label>Patient Weight (kg)</label>
+            <input type="number" step="0.01" id="dWeight" value="2.10">
+          </div>
+          <div>
+            <label>Postnatal Age</label>
+            <select id="dAge">
+              <option value="lt7">Newborn &lt; 7 Days Old</option>
+              <option value="gt7">Newborn 7–28 Days Old</option>
+              <option value="peds">Infant / Child (&gt; 28 Days)</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn" onclick="calcMedDosing()">Generate Safe Dosing Sheet</button>
+        <div id="dosingOutput"></div>
+      </div>
+
+      <div class="card">
+        <h2>Neonatal Jaundice &amp; Phototherapy Decision Tool</h2>
+        <div class="form-row">
+          <div>
+            <label>Postnatal Age (Hours)</label>
+            <input type="number" id="jHours" value="48">
+          </div>
+          <div>
+            <label>Total Serum Bilirubin (µmol/L)</label>
+            <input type="number" id="jBili" value="265">
+          </div>
+          <div>
+            <label>Gestational Risk</label>
+            <select id="jGest">
+              <option value="term">Term (&ge;38 wks, well)</option>
+              <option value="preterm">Preterm (&lt;38 wks) or Sepsis/Hemolysis</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-secondary" onclick="calcJaundice()">Check Phototherapy / Exchange Threshold</button>
+        <div id="jaundiceOutput"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 5: WARD KITCHEN & LACTATION -->
+  <section id="kitchen_lactation" class="panel">
+    <div class="grid-2">
+      <div class="card">
+        <h2>Aggregated Ward Kitchen &amp; Milk Prep Sheet</h2>
+        <p style="font-size:0.84rem; color:var(--muted); margin-bottom:0.65rem;">Auto-tallied from active ward admissions to eliminate manual dietitian calculations.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Therapeutic Feed / Diet</th>
+              <th>Active Patients</th>
+              <th>Volume per 3-Hr Round</th>
+              <th>Total 24-Hr Prep Needed</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Expressed Breast Milk (EBM)</strong></td>
+              <td>2 neonates</td>
+              <td>48 mL</td>
+              <td>384 mL (maternal supply verified)</td>
+            </tr>
+            <tr>
+              <td><strong>Preterm Formula (24 kcal/oz)</strong></td>
+              <td>1 neonate</td>
+              <td>35 mL</td>
+              <td>280 mL (prepare fresh every 3h)</td>
+            </tr>
+            <tr>
+              <td><strong>F-75 Therapeutic Milk</strong></td>
+              <td>1 SAM child</td>
+              <td>105 mL</td>
+              <td>840 mL (2 packets F-75 in 1L boiled cooled water)</td>
+            </tr>
+            <tr>
+              <td><strong>F-100 Therapeutic Milk</strong></td>
+              <td>1 SAM child</td>
+              <td>160 mL</td>
+              <td>1,280 mL (3 packets F-100 in 1.5L water)</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="alert-box alert-blue">
+          <strong>Kitchen Hygiene Reminder:</strong> Discard any reconstituted F-75, F-100, or formula left unrefrigerated after 2 hours.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Maternal Lactation &amp; Kangaroo Mother Care (KMC) Tracker</h2>
+        <div class="form-row">
+          <div>
+            <label>Mother / Baby ID</label>
+            <input type="text" id="lMother" value="Mother of Baby Amina (Inc-04)">
+          </div>
+          <div>
+            <label>24-Hr Pumped EBM Volume (mL)</label>
+            <input type="number" id="lVol" value="180">
+          </div>
+          <div>
+            <label>Daily KMC Skin-to-Skin (Hours)</label>
+            <input type="number" step="0.5" id="lKmc" value="6.5">
+          </div>
+        </div>
+        <button class="btn btn-secondary" onclick="evalLactation()">Log Lactation &amp; KMC Support</button>
+        <div id="lactationOutput"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 6: IPC, OXYGEN & EQUIPMENT -->
+  <section id="ipc_stock" class="panel">
+    <div class="grid-2">
+      <div class="card">
+        <h2>Infection Prevention &amp; Control (IPC) Shift Audit</h2>
+        <div class="check-item">
+          <label style="margin:0; font-weight:500;"><input type="checkbox" checked> Zero incubator/cot sharing enforced across NBU</label>
+          <span class="tag tag-green">Pass</span>
+        </div>
+        <div class="check-item">
+          <label style="margin:0; font-weight:500;"><input type="checkbox" checked> Alcohol hand rub available at every 2 cots</label>
+          <span class="tag tag-green">Pass</span>
+        </div>
+        <div class="check-item">
+          <label style="margin:0; font-weight:500;"><input type="checkbox"> Humidifier chambers &amp; CPAP circuits changed (72h cycle)</label>
+          <span class="tag tag-amber">Due 14:00</span>
+        </div>
+        <div class="check-item">
+          <label style="margin:0; font-weight:500;"><input type="checkbox"> Blood culture cluster alert check (Klebsiella / Staph)</label>
+          <span class="tag tag-blue">0 Clusters</span>
+        </div>
+        <h3 style="margin-top:1rem;">Report Faulty Equipment to Biomedical Unit</h3>
+        <div class="form-row" style="margin-top:0.4rem;">
+          <div>
+            <select id="eqItem">
+              <option>Bubble CPAP Machine #2</option>
+              <option>Phototherapy LED Unit #1</option>
+              <option>Handheld Pulse Oximeter #4</option>
+              <option>Incubator Thermostat #3</option>
+            </select>
+          </div>
+          <div>
+            <button class="btn btn-danger" onclick="logTicket()">Flag Biomedical Ticket</button>
+          </div>
+        </div>
+        <div id="ticketOutput"></div>
+      </div>
+
+      <div class="card">
+        <h2>Tracer Supplies &amp; Oxygen Stock Monitor</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Critical Supply</th>
+              <th>Current Ward Stock</th>
+              <th>Status</th>
+              <th>Quick Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Medical Oxygen Cylinders (J-Type)</td>
+              <td id="stkO2">4 cylinders</td>
+              <td><span class="tag tag-amber" id="tagO2">Low (&lt;24h)</span></td>
+              <td><button class="btn btn-sm" onclick="restock('O2')">Request Refill</button></td>
+            </tr>
+            <tr>
+              <td>IV Benzylpenicillin &amp; Gentamicin</td>
+              <td>48 vials</td>
+              <td><span class="tag tag-green">Adequate</span></td>
+              <td><button class="btn btn-sm btn-secondary" onclick="alert('Pharmacy notified for routine replenishment.')">Log Use</button></td>
+            </tr>
+            <tr>
+              <td>F-75 / F-100 Therapeutic Sachets</td>
+              <td>14 sachets</td>
+              <td><span class="tag tag-amber">Reorder Soon</span></td>
+              <td><button class="btn btn-sm" onclick="alert('Nutrition store requisition sent.')">Requisition</button></td>
+            </tr>
+            <tr>
+              <td>Neonatal Nasal Prongs &amp; NG Tubes (5Fr/6Fr)</td>
+              <td>32 units</td>
+              <td><span class="tag tag-green">Adequate</span></td>
+              <td><button class="btn btn-sm btn-secondary" onclick="alert('Stock verified.')">Verify</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 7: REFERRALS & PARENT SMS -->
+  <section id="referrals_sms" class="panel">
+    <div class="grid-2">
+      <div class="card">
+        <h2>Inter-Facility Newborn &amp; Pediatric Referral Portal</h2>
+        <div class="alert-box alert-green" style="margin-top:0;">
+          <strong>Live Receiving Bed Status:</strong> 3 Heated Incubators, 2 Bubble CPAP stations, and 6 Pediatric Stabilization Beds currently open.
+        </div>
+        <div class="form-row" style="margin-top:0.75rem;">
+          <div>
+            <label>Referring Health Center</label>
+            <input type="text" id="refClinic" placeholder="e.g., Bahati Sub-County Hospital">
+          </div>
+          <div>
+            <label>Pre-Transport Stabilization Status</label>
+            <select id="refStab">
+              <option>Airway Clear, Warm (KMC/Hat), 10% Dextrose Given</option>
+              <option>On Portable Oxygen — Critical Distress</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn" onclick="sendReferral()">Reserve Incubator &amp; Transmit Pre-Arrival Alert</button>
+        <div id="refOutput"></div>
+      </div>
+
+      <div class="card">
+        <h2>Post-Discharge Parent SMS / WhatsApp Generator</h2>
+        <div class="form-row">
+          <div>
+            <label>Parent / Guardian Name</label>
+            <input type="text" id="smsParent" value="Mama Amina">
+          </div>
+          <div>
+            <label>Language</label>
+            <select id="smsLang">
+              <option value="sw">Kiswahili</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+          <div>
+            <label>Discharge Plan</label>
+            <select id="smsType">
+              <option value="nbu">Preterm / KMC &amp; Danger Signs</option>
+              <option value="sam">SAM Outpatient RUTF &amp; Review</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-secondary" onclick="generateSms()">Generate Discharge Care Message</button>
+        <div id="smsOutput"></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <strong>NeoPaediCare by Waziri</strong> — Clinical Workflow, Triage &amp; Dietetics Prototype.<br>
+  This is for informational purposes only. For medical advice or diagnosis, consult a professional. AI responses may include mistakes.
+</footer>
+
+<script>
+  // Initial Seed Data for Ward Board
+  let patients = [
+    { name: "Baby Amina (Inc-04)", group: "nbu", weight: 1.45, temp: 36.1, rr: 68, hr: 174, spo2: 88, dx: "Prematurity / RDS", score: 5, level: "RED", action: "CPAP + Thermal Care; EBM 18 mL q3h via NGT" },
+    { name: "Baby Brian (Cot-02)", group: "nbu", weight: 2.30, temp: 38.2, rr: 62, hr: 168, spo2: 91, dx: "Suspected Neonatal Sepsis", score: 4, level: "RED", action: "Blood culture + IV Pen/Gent; EBM 35 mL q3h" },
+    { name: "Kevin M. (Bed-07)", group: "child", weight: 6.40, temp: 36.8, rr: 38, hr: 128, spo2: 95, dx: "Severe Acute Malnutrition (SAM)", score: 2, level: "AMBER", action: "F-75: 105 mL q3h (Strict Refeeding Guard)" },
+    { name: "Faith W. (Bed-03)", group: "infant", weight: 7.80, temp: 38.5, rr: 52, hr: 146, spo2: 92, dx: "Severe Pneumonia", score: 2, level: "AMBER", action: "Low-flow O2 1L/min; ORS/Breastfeed watch" },
+    { name: "Baby Joy (Cot-09)", group: "nbu", weight: 2.85, temp: 36.9, rr: 44, hr: 138, spo2: 97, dx: "Neonatal Jaundice (Phototherapy)", score: 0, level: "GREEN", action: "LED Phototherapy + Exclusive Breastfeeding" }
+  ];
+
+  function switchTab(tabId, btn) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('nav.tabs button').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function renderWardTable() {
+    patients.sort((a, b) => b.score - a.score);
+    const tbody = document.getElementById('wardTableBody');
+    tbody.innerHTML = '';
+    let red = 0, amber = 0;
+    patients.forEach(p => {
+      if (p.level === 'RED') red++;
+      if (p.level === 'AMBER') amber++;
+      const badge = p.level === 'RED' ? 'tag-red' : (p.level === 'AMBER' ? 'tag-amber' : 'tag-green');
+      tbody.innerHTML += `
+        <tr>
+          <td><strong>${p.name}</strong><br><span style="font-size:0.78rem;color:#64748b">${p.dx}</span></td>
+          <td>${p.weight.toFixed(2)} kg</td>
+          <td>T:${p.temp}°C | RR:${p.rr}<br>HR:${p.hr} | SpO2:${p.spo2}%</td>
+          <td><span class="tag ${badge}">${p.level} (${p.score})</span></td>
+          <td>${p.action}</td>
+        </tr>`;
+    });
+    document.getElementById('kpiCritical').textContent = red;
+    document.getElementById('kpiWatch').textContent = amber;
+    document.getElementById('kpiTotal').textContent = `${patients.length} / 24`;
+    document.getElementById('kpiRatio').textContent = `1 : ${patients.length}`;
+  }
+
+  function addPatientTriage() {
+    const name = document.getElementById('tName').value.trim() || "New Admission";
+    const group = document.getElementById('tGroup').value;
+    const weight = parseFloat(document.getElementById('tWeight').value) || 2.0;
+    const temp = parseFloat(document.getElementById('tTemp').value);
+    const rr = parseInt(document.getElementById('tRR').value);
+    const hr = parseInt(document.getElementById('tHR').value);
+    const spo2 = parseInt(document.getElementById('tSpo2').value);
+    const dx = document.getElementById('tDx').value;
+    const danger = document.getElementById('tDanger').value;
+
+    let score = 0;
+    if (temp < 36.5 || temp > 37.8) score += 1;
+    if (temp < 35.5 || temp > 38.5) score += 1;
+    if (rr > 60 || rr < 30) score += 2;
+    if (hr > 165 || hr < 100) score += 1;
+    if (spo2 < 90) score += 2;
+    else if (spo2 < 94) score += 1;
+    if (danger !== 'none') score += 2;
+
+    let level = "GREEN", cls = "alert-green", action = "Routine 4-hr vitals & standard feeding";
+    if (score >= 4) {
+      level = "RED"; cls = "alert-red";
+      action = "IMMEDIATE clinician review, O2/CPAP check, sepsis screen & blood glucose";
+    } else if (score >= 2) {
+      level = "AMBER"; cls = "alert-amber";
+      action = "Recheck vitals in 30 mins; verify thermal & fluid/feed tolerance";
+    }
+
+    patients.push({ name, group, weight, temp, rr, hr, spo2, dx, score, level, action });
+    renderWardTable();
+    document.getElementById('triageOutput').innerHTML = `
+      <div class="alert-box ${cls}">
+        <strong>Early Warning Score: ${score} (${level})</strong> — ${action}
+      </div>`;
+  }
+
+  function calcNeonatalFeeds() {
+    const wt = parseFloat(document.getElementById('nWeight').value) || 1.5;
+    const dol = parseInt(document.getElementById('nDol').value) || 1;
+    const gest = document.getElementById('nGest').value;
+    const ivHr = parseFloat(document.getElementById('nIvRate').value) || 0;
+    const freq = parseInt(document.getElementById('nFreq').value);
+    const milk = document.getElementById('nMilk').value;
+
+    // Fluid target mL/kg/day based on DOL & gestation
+    let baseFluid = gest === 'preterm' ? 80 : 60;
+    let targetMlKg = Math.min(160, baseFluid + (dol - 1) * 20);
+    const totalDailyFluid = wt * targetMlKg;
+    const dailyIv = ivHr * 24;
+    const dailyEnteral = Math.max(0, totalDailyFluid - dailyIv);
+    const perFeed = dailyEnteral / freq;
+
+    let fortNote = "Continue unfortified EBM until enteral volume reaches 100 mL/kg/day.";
+    if (gest === 'preterm' && (dailyEnteral / wt) >= 100) {
+      fortNote = "<strong>Fortification & Micronutrient Trigger:</strong> Baby has reached &ge;100 mL/kg/day enteral feeds. Start Human Milk Fortifier (HMF), Multivitamins, and Iron (2–4 mg/kg/day from Day 14).";
+    }
+
+    document.getElementById('neonatalFeedOutput').innerHTML = `
+      <div class="alert-box alert-blue">
+        <strong>Total Fluid Target (DOL ${dol}):</strong> ${targetMlKg} mL/kg/day = <strong>${totalDailyFluid.toFixed(0)} mL/day</strong><br>
+        <strong>Minus IV Fluids:</strong> ${dailyIv.toFixed(0)} mL/day (${ivHr} mL/hr)<br>
+        <strong>Enteral ${milk} Order:</strong> <strong>${dailyEnteral.toFixed(0)} mL/day</strong> &rarr; <strong>${perFeed.toFixed(1)} mL every ${24/freq} hours</strong><br><br>
+        ${fortNote}
+      </div>`;
+  }
+
+  function evalNecScreen() {
+    let score = 0;
+    document.querySelectorAll('.nec-chk:checked').forEach(c => score += parseInt(c.value));
+    const out = document.getElementById('necOutput');
+    if (score >= 2) {
+      out.innerHTML = `<div class="alert-box alert-red"><strong>STOP ALL ENTERAL FEEDS IMMEDIATELY (Nil By Mouth):</strong> High suspicion of Necrotizing Enterocolitis (NEC) or severe feed intolerance. Place open NG tube for gastric decompression, start IV maintenance fluids, obtain abdominal X-ray, and alert senior clinician.</div>`;
+    } else if (score === 1) {
+      out.innerHTML = `<div class="alert-box alert-amber"><strong>CAUTION — Hold Next Feed &amp; Reassess:</strong> Moderate intolerance sign detected. Re-examine abdomen in 2 hours and notify clinician before advancing feed volumes.</div>`;
+    } else {
+      out.innerHTML = `<div class="alert-box alert-green"><strong>SAFE TO FEED:</strong> No NEC warning signs present. Administer scheduled feed slowly by gravity over 15–20 minutes.</div>`;
+    }
+  }
+
+  function calcImamProtocol() {
+    const wt = parseFloat(document.getElementById('mWeight').value) || 6.0;
+    const muac = parseFloat(document.getElementById('mMuac').value) || 12.0;
+    const edema = parseInt(document.getElementById('mEdema').value);
+    const comp = document.getElementById('mComp').value;
+    const phase = document.getElementById('mPhase').value;
+
+    let status = "Normal Nutritional Status";
+    let cls = "alert-green";
+    if (edema > 0 || muac < 11.5) {
+      status = "SEVERE ACUTE MALNUTRITION (SAM)";
+      cls = "alert-red";
+    } else if (muac < 12.5) {
+      status = "MODERATE ACUTE MALNUTRITION (MAM)";
+      cls = "alert-amber";
+    }
+
+    let feedPlan = "";
+    if (phase === 'f75') {
+      const mlKg = edema === 3 ? 100 : 130;
+      const daily = wt * mlKg;
+      feedPlan = `<strong>F-75 Stabilization Order:</strong> ${mlKg} mL/kg/day = <strong>${daily.toFixed(0)} mL/day</strong> (${(daily/8).toFixed(0)} mL every 3 hours, or ${(daily/12).toFixed(0)} mL every 2 hours if vomiting/diarrhea).`;
+    } else if (phase === 'f100') {
+      const daily = wt * 175;
+      feedPlan = `<strong>F-100 Rehabilitation Order:</strong> ~175 mL/kg/day = <strong>${daily.toFixed(0)} mL/day</strong> (${(daily/8).toFixed(0)} mL every 3 hours). Monitor closely for tachypnea/fluid overload.`;
+    } else {
+      const sachetsDay = (wt * 0.2).toFixed(1);
+      const sachets14d = Math.ceil(sachetsDay * 14);
+      feedPlan = `<strong>Outpatient RUTF Discharge Plan:</strong> ~${sachetsDay} sachets/day &rarr; Dispense <strong>${sachets14d} RUTF sachets</strong> for 14-day Outpatient Therapeutic Program (OTP) follow-up.`;
+    }
+
+    const careSetting = (status.includes("SAM") && comp === "failed")
+      ? "Admit to Inpatient Stabilization Center (SC)."
+      : "Manage via Outpatient Therapeutic Program (OTP) / SFP with weekly weigh-in.";
+
+    document.getElementById('imamOutput').innerHTML = `
+      <div class="alert-box ${cls}">
+        <strong>Classification:</strong> ${status}<br>
+        <strong>Care Pathway:</strong> ${careSetting}<br><br>
+        ${feedPlan}
+      </div>`;
+  }
+
+  function calcMedDosing() {
+    const wt = parseFloat(document.getElementById('dWeight').value) || 2.0;
+    const age = document.getElementById('dAge').value;
+    const penDose = (wt * 50000).toFixed(0);
+    const penFreq = age === 'lt7' ? 'every 12 hours' : 'every 6–8 hours';
+    const gentDose = age === 'lt7' ? (wt * 3).toFixed(1) : (wt * 5).toFixed(1);
+    const fluidMaint = wt <= 10 ? (wt * 100).toFixed(0) : (1000 + (wt - 10) * 50).toFixed(0);
+
+    document.getElementById('dosingOutput').innerHTML = `
+      <div class="alert-box alert-blue">
+        <strong>Weight: ${wt.toFixed(2)} kg (Double-Check Before Administration)</strong><br>
+        &bull; <strong>IV Benzylpenicillin (50,000 IU/kg):</strong> <strong>${Number(penDose).toLocaleString()} IU</strong> ${penFreq}<br>
+        &bull; <strong>IV Gentamicin:</strong> <strong>${gentDose} mg</strong> once every 24 hours<br>
+        &bull; <strong>Standard Maintenance Fluid Target (if &gt;DOL 5):</strong> ${fluidMaint} mL/day (${(fluidMaint/24).toFixed(1)} mL/hr)
+      </div>`;
+  }
+
+  function calcJaundice() {
+    const hrs = parseInt(document.getElementById('jHours').value) || 24;
+    const bili = parseInt(document.getElementById('jBili').value) || 150;
+    const gest = document.getElementById('jGest').value;
+
+    let photoThresh = gest === 'term' ? Math.min(340, 120 + hrs * 3) : Math.min(260, 90 + hrs * 2.5);
+    let exchThresh = photoThresh + 85;
+
+    const out = document.getElementById('jaundiceOutput');
+    if (bili >= exchThresh) {
+      out.innerHTML = `<div class="alert-box alert-red"><strong>CRITICAL — EXCHANGE TRANSFUSION RANGE (${bili} &ge; ${exchThresh.toFixed(0)} µmol/L):</strong> Start intensive multi-bank LED phototherapy immediately, hydrate, type &amp; crossmatch blood, and alert consultant neonatologist.</div>`;
+    } else if (bili >= photoThresh) {
+      out.innerHTML = `<div class="alert-box alert-amber"><strong>START PHOTOTHERAPY (${bili} &ge; ${photoThresh.toFixed(0)} µmol/L):</strong> Place baby naked under LED phototherapy with eye shields. Increase feeding frequency by 10–15% to clear bilirubin in stool/urine. Recheck TSB in 6 hours.</div>`;
+    } else {
+      out.innerHTML = `<div class="alert-box alert-green"><strong>BELOW PHOTOTHERAPY THRESHOLD (${bili} &lt; ${photoThresh.toFixed(0)} µmol/L):</strong> Continue frequent breastfeeding and clinical monitoring.</div>`;
+    }
+  }
+
+  function evalLactation() {
+    const mom = document.getElementById('lMother').value;
+    const vol = parseInt(document.getElementById('lVol').value) || 0;
+    const kmc = parseFloat(document.getElementById('lKmc').value) || 0;
+    const out = document.getElementById('lactationOutput');
+
+    let alertCls = vol < 300 ? "alert-amber" : "alert-green";
+    let supplyMsg = vol < 300
+      ? "<strong>Low Milk Supply Flag:</strong> Schedule nutritionist/lactation bedside counseling today. Check maternal hydration, nutrition, and 3-hourly expression technique."
+      : "<strong>Good Maternal Milk Supply:</strong> Exceeds 300 mL/day milestone. Label and refrigerate excess EBM with date/time.";
+    let kmcMsg = kmc < 8
+      ? "Encourage increasing KMC skin-to-skin duration toward &ge;8–20 hours/day for thermal stability and weight gain."
+      : "Excellent KMC duration supporting temperature control and lactation.";
+
+    out.innerHTML = `<div class="alert-box ${alertCls}"><strong>${mom}:</strong> ${supplyMsg}<br>${kmcMsg}</div>`;
+  }
+
+  function logTicket() {
+    const item = document.getElementById('eqItem').value;
+    document.getElementById('ticketOutput').innerHTML = `<div class="alert-box alert-red"><strong>Biomedical Repair Ticket Created:</strong> ${item} flagged as out-of-service. Biomedical engineering alerted via SMS.</div>`;
+  }
+
+  function restock(type) {
+    if (type === 'O2') {
+      document.getElementById('stkO2').textContent = "4 cylinders (Refill Dispatched)";
+      document.getElementById('tagO2').className = "tag tag-blue";
+      document.getElementById('tagO2').textContent = "Restock En Route";
+    }
+  }
+
+  function sendReferral() {
+    const clinic = document.getElementById('refClinic').value.trim() || "Referring Facility";
+    const stab = document.getElementById('refStab').value;
+    document.getElementById('refOutput').innerHTML = `<div class="alert-box alert-blue"><strong>Incubator #06 Reserved for ${clinic}:</strong> Pre-arrival stabilization note ("${stab}") logged on NBU receiving screen.</div>`;
+  }
+
+  function generateSms() {
+    const parent = document.getElementById('smsParent').value.trim() || "Mzazi";
+    const lang = document.getElementById('smsLang').value;
+    const type = document.getElementById('smsType').value;
+    let msg = "";
+
+    if (lang === 'sw') {
+      msg = type === 'nbu'
+        ? `Habari ${parent}, hongera kwa kuruhusiwa kutoka hospitali. Endelea kumnyonyesha mtoto maziwa ya mama pekee na kumweka kifuani (Kangaroo Mother Care). Rudi hospitali HARAKA ukiona dalili za hatari: homa au baridi kali, kushindwa kunyonya, kupumua kwa shida, au macho kuwa njano.`
+        : `Habari ${parent}, mpe mtoto pakiti za lishe (RUTF) kama ulivyoelekezwa kila siku bila kuchanganya na chakula kingine kwanza, na umpe maji safi ya kunywa. Tafadhali rudi kliniki ya lishe (OTP) baada ya siku 14 kupima uzito.`;
+    } else {
+      msg = type === 'nbu'
+        ? `Hello ${parent}, welcome home from the Newborn Unit. Continue exclusive breastfeeding and Kangaroo Mother Care (skin-to-skin). Return to the hospital IMMEDIATELY if you see danger signs: fever or cold body, poor feeding, fast/difficult breathing, or yellow eyes.`
+        : `Hello ${parent}, give your child the prescribed RUTF therapeutic food sachets daily along with safe drinking water. Please return to the Outpatient Nutrition Clinic in 14 days for weight check and refill.`;
+    }
+    document.getElementById('smsOutput').innerHTML = `<div class="sms-preview">${msg}</div>`;
+  }
+
+  // Initialize defaults on load
+  renderWardTable();
+  calcNeonatalFeeds();
+  calcImamProtocol();
+  calcMedDosing();
+  calcJaundice();
+</script>
+</body>
+</html>
